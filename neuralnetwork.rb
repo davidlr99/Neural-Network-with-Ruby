@@ -89,16 +89,13 @@ class NNetwork
   def learn(net,bias,inputs,expecteds,untilError,learnrate)
     counter = 0.0
     while true
+      total_error = 0.0
       inputN = 0.0
       for input in inputs
         expected = expecteds[inputN]
         output_of_neuron,errors = run(input,net,bias,expected)
-        total_error = error(output_of_neuron,expected)
-        if total_error <= untilError
-          return net
-          break
-        end
-        print "Error: #{total_error}  Iterations: #{counter}\r"
+        total_error += error(output_of_neuron,expected)
+
         value = errors
         l = 0
         for layer in net.values.reverse
@@ -136,7 +133,13 @@ class NNetwork
         inputN+=1
 
       end
+      print "Error: #{total_error}  Iterations: #{counter}\r"
+
+      if total_error <= untilError
+        return net
+        break
       end
+    end
 
     puts "#{counter} Iterations.                                              \r"
     return net
