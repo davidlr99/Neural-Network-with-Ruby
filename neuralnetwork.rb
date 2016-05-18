@@ -9,6 +9,19 @@ class Matrix
 end
 
 class NNetwork
+
+  def saveNNet(name,net,bias)
+    data = Hash.new
+    data.store("net",net)
+    data.store("bias",bias)
+
+    serialized = Marshal.dump(data)
+    File.open("#{name}", "w+") { |file| file.write(serialized) }
+  end
+  def readSavedNNet(name)
+    data = Marshal.load File.read("#{name}")
+    return data
+  end
   def error(output,expected)
     output = output.values[-1].to_a[0]
 
@@ -87,6 +100,7 @@ class NNetwork
   end
 
   def learn(net,bias,inputs,expecteds,untilError,learnrate)
+    time = Time.now
     counter = 0.0
     while true
       total_error = 0.0
@@ -136,6 +150,8 @@ class NNetwork
       print "Error: #{total_error}  Iterations: #{counter}\r"
 
       if total_error <= untilError
+        time2 = Time.now
+        puts "\n#{(time2-time)/60.0} Minutes.\r"
         return net
         break
       end
